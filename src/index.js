@@ -26,7 +26,7 @@ const path = require("path");
 function count(users, mobileDevices, iotDevices) {
   // First Function (description below)
   // checks how many IOT DEVICES is connected to every device and saves this data in mobile_devices object[]
-  const howManyIotIsConnectedToSingleDevice = () => {
+  const howManyIotIsConnectedToSingleDevice = (mobileDevices, iotDevices) => {
     return mobileDevices.map((singleMobileDevice) => {
       const iotDevicesConnectedToSingleMobile = iotDevices.filter(
         (singleIotDevice) => singleMobileDevice.id === singleIotDevice.mobile
@@ -39,7 +39,8 @@ function count(users, mobileDevices, iotDevices) {
   // Checks how many mobile devices is connected to Single User and thanks to data from howManyIotIsConnectedToSingleDevice()
   // it calculates the sum of iot devices in every mobile devices used by a user
   const howManyMobileDevicesIsConnectedToSingleUser = (
-    mobileDevicesWithIot
+    mobileDevicesWithIot,
+    users
   ) => {
     return users.map((singleUser) => {
       const iotDevicesConnectedToSingleUser = mobileDevicesWithIot
@@ -73,10 +74,10 @@ function count(users, mobileDevices, iotDevices) {
         user.iotDevicesConnectedToSingleUser;
     });
     // saves the result as object
-    let result = Object.keys(namesAndIotDevices).map((k) => {
+    let result = Object.keys(namesAndIotDevices).map((name) => {
       return {
-        name: k,
-        iotDevicesConnectedToUserName: namesAndIotDevices[k],
+        name: name,
+        iotDevicesConnectedToUserName: namesAndIotDevices[name],
       };
     });
 
@@ -94,9 +95,14 @@ function count(users, mobileDevices, iotDevices) {
     return result;
   };
 
-  const mobileDevicesWithIot = howManyIotIsConnectedToSingleDevice();
-  const usersWithTotalIot =
-    howManyMobileDevicesIsConnectedToSingleUser(mobileDevicesWithIot);
+  const mobileDevicesWithIot = howManyIotIsConnectedToSingleDevice(
+    mobileDevices,
+    iotDevices
+  );
+  const usersWithTotalIot = howManyMobileDevicesIsConnectedToSingleUser(
+    mobileDevicesWithIot,
+    users
+  );
   const namesWithIotDevices =
     numberOfIotDevicesUsersWithTheSameName(usersWithTotalIot);
   const textResult = convertObjectToString(namesWithIotDevices);
@@ -104,25 +110,29 @@ function count(users, mobileDevices, iotDevices) {
   return textResult;
 }
 
-// Function counts contain four functions:
+// Function 'counts()' contain four functions:
 //
-//-->howManyIotIsConnectedToSingleDevice()
+//
+// 1-->howManyIotIsConnectedToSingleDevice(mobileDevices, iotDevices)
 //  This function determines how many Iot Devices is connected to a single mobile device.
 // it maps over all of mobile devices and iot devices looking for matching mobile id. Later on it counts a number of iot devices for every mobile device.
 // Function add up this data to object ( how many iot devices was connected ) and returns it.
 //
-//-->howManyMobileDevicesIsConnectedToSingleUser(mobileDevicesWithIot)
+//
+// 2-->howManyMobileDevicesIsConnectedToSingleUser(mobileDevicesWithIot)
 //  Function accepts modified mobileDevices object. Function follow the same pattern as howManyIotIsConnectedToSingleDevice().
 // Function checks how many mobile devices is connected to Single User
 // it calculates the sum of iot devices in every mobile devices used by a user
 //
-//-->numberOfIotDevicesUsersWithTheSameName(usersWithTotalIot)
+//
+// 3-->numberOfIotDevicesUsersWithTheSameName(usersWithTotalIot)
 //  Takes the data from howManyMobileDevicesIsConnectedToSingleUser and creacts new object[] with name and Total devices only
 // How many iot devices have been ever owned by users with the same name
 // it merges objects with repeating names and calculating sums of iot devices for everyone.
 //
-// -->convertObjectToString(namesWithIotDevices)
+//
+// 4-->convertObjectToString(namesWithIotDevices)
 //  Function simply convert object into array of strings to match the example.
-
+//
 // NOTE:
 //  I completed this task in four function to maximize readability.
